@@ -87,12 +87,12 @@ kotlin {
 
 tasks.register("iosTestOnSim") {
     val device = project.findProperty("iosDevice") as? String ?: "iPhone 8"
-    dependsOn("linkDebugTestIos")
+    dependsOn("linkDebugTestIosX64")
     group = JavaBasePlugin.VERIFICATION_GROUP
     description = "Runs tests for target 'ios' on an iOS simulator"
 
     doLast {
-        val binary = (kotlin.targets["ios"] as KotlinNativeTarget).binaries.getTest("DEBUG").outputFile
+        val binary = (kotlin.targets["iosX64"] as KotlinNativeTarget).binaries.getTest("DEBUG").outputFile
         try {
             exec {
                 commandLine("xcrun", "simctl", "boot", device)
