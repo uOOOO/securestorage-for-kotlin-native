@@ -15,7 +15,6 @@ actual class SecureStorage(applicationTag: String) {
     private val keyManager by lazy { KeyManager(applicationTag) }
     private val userDefaults by lazy { NSUserDefaults.standardUserDefaults }
 
-    @Suppress("UNCHECKED_CAST")
     private fun encrypt(decryptedData: NSData): NSData = memScoped {
         val error = alloc<CFErrorRefVar>()
         val publicKey = keyManager.getPublicKey()
@@ -23,7 +22,7 @@ actual class SecureStorage(applicationTag: String) {
         val encryptedValue = SecKeyCreateEncryptedData(
             publicKey,
             kSecKeyAlgorithmECIESEncryptionCofactorX963SHA256AESGCM,
-            data as CFDataRef,
+            data?.reinterpret(),
             error.ptr
         )
         CFBridgingRelease(data)
@@ -36,7 +35,7 @@ actual class SecureStorage(applicationTag: String) {
         return encryptedValue.toNSData().also { CFRelease(encryptedValue) }
     }
 
-    @Suppress("UNCHECKED_CAST", "EXPERIMENTAL_API_USAGE")
+    @Suppress("EXPERIMENTAL_API_USAGE")
     private fun decrypt(encryptedData: NSData): NSData? = memScoped {
         val error = alloc<CFErrorRefVar>()
         val privateKey = keyManager.getPrivateKey()
@@ -44,7 +43,7 @@ actual class SecureStorage(applicationTag: String) {
         val decryptedData = SecKeyCreateDecryptedData(
             privateKey,
             kSecKeyAlgorithmECIESEncryptionCofactorX963SHA256AESGCM,
-            data as CFDataRef,
+            data?.reinterpret(),
             error.ptr
         )
         CFBridgingRelease(data)

@@ -1,9 +1,6 @@
 package com.uoooo.securestorage
 
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.value
+import kotlinx.cinterop.*
 import platform.CoreFoundation.*
 import platform.Foundation.CFBridgingRelease
 import platform.Foundation.CFBridgingRetain
@@ -93,8 +90,7 @@ internal class KeyManager(private val applicationTag: String) {
             throw IllegalStateException("Failed to get private key; reason=$status")
         }
 
-        @Suppress("UNCHECKED_CAST")
-        return result.value as SecKeyRef?
+        return result.value?.reinterpret()
     }
 
     fun getPublicKey(): SecKeyRef? {
