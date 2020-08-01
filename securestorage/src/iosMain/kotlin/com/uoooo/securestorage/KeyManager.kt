@@ -31,7 +31,8 @@ internal class KeyManager(private val applicationTag: String) {
             .apply {
                 CFDictionaryAddValue(this, kSecAttrIsPermanent, kCFBooleanTrue)
                 CFDictionaryAddValue(this, kSecAttrApplicationTag, applicationTag)
-                CFDictionaryAddValue(this, kSecAttrAccessControl, accessControl)
+                @Suppress("ConstantConditionIf")
+                if (!isSimulator) CFDictionaryAddValue(this, kSecAttrAccessControl, accessControl)
             }
 
         val keySizeInBits = CFBridgingRetain(NSNumber(int = 256))
