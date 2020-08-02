@@ -5,7 +5,6 @@ object Version {
     const val coreKtx = "1.2.0"
     const val kotlinSerialization = "0.20.0"
     const val securityCrypto = "1.1.0-alpha01"
-    const val krypto = "1.11.2"
 
     object Android {
         const val compileSdkVersion = 29

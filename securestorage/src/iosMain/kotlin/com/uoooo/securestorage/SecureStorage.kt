@@ -2,14 +2,10 @@ package com.uoooo.securestorage
 
 import kotlinx.cinterop.*
 import platform.CoreFoundation.*
-import platform.Foundation.CFBridgingRelease
-import platform.Foundation.CFBridgingRetain
-import platform.Foundation.NSData
-import platform.Foundation.NSUserDefaults
+import platform.Foundation.*
 import platform.Security.SecKeyCreateDecryptedData
 import platform.Security.SecKeyCreateEncryptedData
 import platform.Security.kSecKeyAlgorithmECIESEncryptionCofactorX963SHA256AESGCM
-import platform.posix.memcpy
 
 actual class SecureStorage(applicationTag: String) {
     private val keyManager by lazy { KeyManager(applicationTag) }
@@ -63,23 +59,19 @@ actual class SecureStorage(applicationTag: String) {
     @Throws
     actual fun put(key: String, value: String) {
         @Suppress("EXPERIMENTAL_API_USAGE")
-        userDefaults.setObject(encrypt(value.toNSData()), key.toSHA256Base64())
+        userDefaults.setObject(encrypt(value.toNSData()), key.toNSData().toSHA512().base64Encoding())
     }
 
     @Throws
     actual fun get(key: String, default: String?): String? {
-        val data = userDefaults.dataForKey(key.toSHA256Base64()) ?: return default
-        val decryptedData = decrypt(data) ?: return default
-
         @Suppress("EXPERIMENTAL_API_USAGE")
-        val result = ByteArray(decryptedData.length.toInt()).apply {
-            usePinned { memcpy(it.addressOf(0), decryptedData.bytes, decryptedData.length) }
-        }
-
-        return result.decodeToString()
+        val data = userDefaults.dataForKey(key.toNSData().toSHA512().base64Encoding()) ?: return default
+        val decryptedData = decrypt(data) ?: return default
+        return decryptedData.toKString()
     }
 
     actual fun remove(key: String) {
-        userDefaults.removeObjectForKey(key.toSHA256Base64())
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        userDefaults.removeObjectForKey(key.toNSData().toSHA512().base64Encoding())
     }
 }

@@ -57,7 +57,6 @@ kotlin {
         getByName("commonMain").dependencies {
             implementation(kotlin("stdlib-common"))
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Version.kotlinSerialization}")
-            implementation("com.soywiz.korlibs.krypto:krypto:${Version.krypto}")
         }
         getByName("commonTest").dependencies {
             implementation(kotlin("test-common"))
